@@ -7,7 +7,7 @@
                         <h3 class="card-title">Users Table</h3>
 
                         <div class="card-tools">
-                            <button class="btn btn-success" data-toggle="modal" data-target="#addNew">
+                            <button class="btn btn-success" @click="showModal()">
                                 Add New <i class="fa fa-user-plus"></i>
                             </button>
                         </div>
@@ -34,11 +34,11 @@
                                 <td>{{user.type | upText}}</td>
                                 <td>{{user.created_at | myDate}}</td>
                                 <td>
-                                    <a href="#">
+                                    <a href="#" @click="editUser(user)">
                                         <i class="fa fa-edit blue"></i>
                                     </a>
                                     /
-                                    <a href="#">
+                                    <a href="#" @click="deleteUser(user.id)">
                                         <i class="fa fa-trash red"></i>
                                     </a>
                                 </td>
@@ -132,6 +132,42 @@
             }
         },
         methods: {
+            showModal(){
+                this.form.reset();
+                $('#addNew').modal('show');
+            },
+            editUser(user){
+                this.form.reset();
+                $('#addNew').modal('show');
+                this.form.fill(user);
+            },
+            deleteUser(id){
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value) {
+                        this.$Progress.start()
+                        this.form.delete('api/user/'+id).then(() => {
+                            Swal.fire(
+                                'Deleted!',
+                                'Your file has been deleted.',
+                                'success'
+                            );
+                            this.$Progress.finish()
+                            Fire.$emit('afterCreated');
+                        }).catch (() => {
+                            this.$Progress.fail()
+                            Swal('Failed!', "There was something wrong", "warning");
+                        })
+                    }
+                })
+            },
             loadUsers(){
                 axios.get('api/user').then( ({data})  => (this.users = data.data));
             },
