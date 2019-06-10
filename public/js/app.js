@@ -2079,6 +2079,7 @@ __webpack_require__.r(__webpack_exports__);
       editMode: false,
       users: {},
       form: new Form({
+        id: '',
         name: '',
         email: '',
         password: '',
@@ -2125,9 +2126,25 @@ __webpack_require__.r(__webpack_exports__);
         _this2.$Progress.fail();
       });
     },
-    editUser: function editUser() {},
-    deleteUser: function deleteUser(id) {
+    editUser: function editUser() {
       var _this3 = this;
+
+      this.$Progress.start();
+      this.form.put('api/user/' + this.form.id).then(function () {
+        Fire.$emit('afterCreated');
+        $('#addNew').modal('hide');
+        Toast.fire({
+          type: 'success',
+          title: 'Information has been updated'
+        });
+
+        _this3.$Progress.finish();
+      })["catch"](function () {
+        _this3.$Progress.fail();
+      });
+    },
+    deleteUser: function deleteUser(id) {
+      var _this4 = this;
 
       Swal.fire({
         title: 'Are you sure?',
@@ -2139,16 +2156,16 @@ __webpack_require__.r(__webpack_exports__);
         confirmButtonText: 'Yes, delete it!'
       }).then(function (result) {
         if (result.value) {
-          _this3.$Progress.start();
+          _this4.$Progress.start();
 
-          _this3.form["delete"]('api/user/' + id).then(function () {
+          _this4.form["delete"]('api/user/' + id).then(function () {
             Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
 
-            _this3.$Progress.finish();
+            _this4.$Progress.finish();
 
             Fire.$emit('afterCreated');
           })["catch"](function () {
-            _this3.$Progress.fail();
+            _this4.$Progress.fail();
 
             Swal('Failed!', "There was something wrong", "warning");
           });
@@ -2157,11 +2174,11 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    var _this4 = this;
+    var _this5 = this;
 
     this.loadUsers();
     Fire.$on('afterCreated', function () {
-      _this4.loadUsers();
+      _this5.loadUsers();
     }); //            setInterval(() => this.loadUsers(), 3000)
   }
 });
@@ -59154,7 +59171,7 @@ var render = function() {
                   on: {
                     submit: function($event) {
                       $event.preventDefault()
-                      _vm.editMode ? _vm.updateUser() : _vm.createUser()
+                      _vm.editMode ? _vm.editUser() : _vm.createUser()
                     }
                   }
                 },

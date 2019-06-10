@@ -62,7 +62,7 @@
                         </button>
                     </div>
 
-                    <form @submit.prevent="editMode? updateUser() : createUser()">
+                    <form @submit.prevent="editMode? editUser() : createUser()">
                     <div class="modal-body">
 
                         <div class="form-group">
@@ -124,6 +124,7 @@
                 editMode : false,
                 users: {},
                 form: new Form({
+                    id          : '',
                     name        : '',
                     email       : '',
                     password    : '',
@@ -167,7 +168,22 @@
                 })
             },
             editUser(){
+                this.$Progress.start()
+                this.form.put('api/user/'+this.form.id).then(() => {
 
+                    Fire.$emit('afterCreated')
+                    $('#addNew').modal('hide')
+
+                    Toast.fire({
+                        type: 'success',
+                        title: 'Information has been updated'
+                    })
+
+                    this.$Progress.finish()
+
+                }).catch(() => {
+                    this.$Progress.fail()
+                })
             },
             deleteUser(id){
                 Swal.fire({
