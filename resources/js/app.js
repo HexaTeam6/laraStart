@@ -39,6 +39,14 @@ Vue.filter('myDate', function (date) {
     return moment(date).format('MMMM Do YYYY');
 });
 
+import VueProgressBar from 'vue-progressbar'
+
+Vue.use(VueProgressBar, {
+    color: 'rgb(143, 255, 199)',
+    failedColor: 'red',
+    height: '10px'
+})
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
