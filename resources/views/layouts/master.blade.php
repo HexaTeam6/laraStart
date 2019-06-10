@@ -146,5 +146,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- REQUIRED SCRIPTS -->
 
 <script src="/js/app.js"></script>
+
+@if(config('app.env') == 'local')
+    <script src="http://localhost:35729/livereload.js"></script>
+@endif
+
 </body>
 </html>
