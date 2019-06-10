@@ -7,7 +7,7 @@
                         <h3 class="card-title">Users Table</h3>
 
                         <div class="card-tools">
-                            <button class="btn btn-success" @click="showModal()">
+                            <button class="btn btn-success" @click="showAdd()">
                                 Add New <i class="fa fa-user-plus"></i>
                             </button>
                         </div>
@@ -34,7 +34,7 @@
                                 <td>{{user.type | upText}}</td>
                                 <td>{{user.created_at | myDate}}</td>
                                 <td>
-                                    <a href="#" @click="editUser(user)">
+                                    <a href="#" @click="showEdit(user)">
                                         <i class="fa fa-edit blue"></i>
                                     </a>
                                     /
@@ -56,13 +56,13 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addNewLabel">Add New</h5>
+                        <h5 class="modal-title" id="addNewLabel">{{editMode? "Edit User's Info" : "Add New"}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
 
-                    <form @submit.prevent="createUser">
+                    <form @submit.prevent="editMode? updateUser() : createUser()">
                     <div class="modal-body">
 
                         <div class="form-group">
@@ -105,7 +105,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button v-show="editMode" type="submit" class="btn btn-success">Update</button>
+                        <button v-show="!editMode" type="submit" class="btn btn-primary">Create</button>
                     </div>
                     </form>
 
@@ -120,6 +121,7 @@
     export default {
         data(){
             return{
+                editMode : false,
                 users: {},
                 form: new Form({
                     name        : '',
@@ -132,14 +134,40 @@
             }
         },
         methods: {
-            showModal(){
+            showAdd(){
+                this.editMode = false;
                 this.form.reset();
                 $('#addNew').modal('show');
             },
-            editUser(user){
+            showEdit(user){
+                this.editMode = true;
                 this.form.reset();
                 $('#addNew').modal('show');
                 this.form.fill(user);
+            },
+            loadUsers(){
+                axios.get('api/user').then( ({data})  => (this.users = data.data));
+            },
+            createUser(){
+                this.$Progress.start()
+                this.form.post('api/user').then(()=>{
+
+                    Fire.$emit('afterCreated')
+                    $('#addNew').modal('hide')
+
+                    Toast.fire({
+                        type: 'success',
+                        title: 'User created successfully'
+                    })
+
+                    this.$Progress.finish()
+
+                }).catch(()=>{
+                    this.$Progress.fail()
+                })
+            },
+            editUser(){
+
             },
             deleteUser(id){
                 Swal.fire({
@@ -166,27 +194,6 @@
                             Swal('Failed!', "There was something wrong", "warning");
                         })
                     }
-                })
-            },
-            loadUsers(){
-                axios.get('api/user').then( ({data})  => (this.users = data.data));
-            },
-            createUser(){
-                this.$Progress.start()
-                this.form.post('api/user').then(()=>{
-
-                    Fire.$emit('afterCreated')
-                    $('#addNew').modal('hide')
-
-                    Toast.fire({
-                        type: 'success',
-                        title: 'User created successfully'
-                    })
-
-                    this.$Progress.finish()
-
-                }).catch(()=>{
-                    this.$Progress.fail()
                 })
             }
         },
