@@ -8,6 +8,17 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+import swal from 'sweetalert2'
+
+window.Swal = swal;
+let Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000
+});
+window.Toast = Toast;
+
 import { Form, HasError, AlertError } from 'vform'
 import moment from 'moment'
 
@@ -44,7 +55,7 @@ import VueProgressBar from 'vue-progressbar'
 Vue.use(VueProgressBar, {
     color: 'rgb(143, 255, 199)',
     failedColor: 'red',
-    height: '10px'
+    height: '3px'
 })
 
 /**
