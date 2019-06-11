@@ -130,22 +130,32 @@
         },
         methods: {
             updateProfile(){
+                this.$Progress.start()
                 this.form.put('api/profile').then(() => {
-                    
-                }).catch(() => {
 
+                    this.$Progress.finish()
+                }).catch(() => {
+                    this.$Progress.fail()
                 })
             },
             updatePhoto(e){
                 let file = e.target.files[0];
-//                console.log(file);
+                console.log(file);
                 let reader = new FileReader();
 
-                reader.onloadend = (file) => {
-                    this.form.photo = reader.result;
-                }
+                if(file['size'] < 2111775){
+                    reader.onloadend = (file) => {
+                        this.form.photo = reader.result;
+                    }
 
-                reader.readAsDataURL(file);
+                    reader.readAsDataURL(file);
+                }else{
+                    Swal({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: 'You are uploading large file'
+                    });
+                }
             }
         },
         created() {
