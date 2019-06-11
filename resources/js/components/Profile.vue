@@ -82,7 +82,7 @@
                                         <label for="inputPhoto" class="col-sm-2 control-label">Profile Photo</label>
 
                                         <div class="col-sm-10">
-                                            <input type="file" id="inputPhoto" placeholder="Photo Profile"/>
+                                            <input type="file" @change="updatePhoto" name="photo" id="inputPhoto" placeholder="Photo Profile"/>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -127,6 +127,19 @@
         },
         mounted() {
             console.log('Component mounted.')
+        },
+        methods: {
+            updatePhoto(e){
+                let file = e.target.files[0];
+//                console.log(file);
+                let reader = new FileReader();
+
+                reader.onloadend = (file) => {
+                    this.form.photo = reader.result;
+                }
+
+                reader.readAsDataURL(file);
+            }
         },
         created() {
             axios.get('api/profile').then(({data}) => (this.form.fill(data)));
