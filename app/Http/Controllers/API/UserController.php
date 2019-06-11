@@ -59,7 +59,15 @@ class UserController extends Controller
 
     public function updateProfile(Request $request)
     {
-        return $request;
+        $user = auth('api')->user();
+
+        if($request->photo){
+            $name = time().'.'.explode('/',
+                    explode(':',
+                        substr($request->photo, 0, strpos($request->photo, ';')))[1])[1];
+
+            \Image::make($request->photo)->save(public_path('img/profile/').$name);
+        }
     }
 
     /**
