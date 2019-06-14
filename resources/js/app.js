@@ -22,6 +22,9 @@ window.Toast = Toast;
 import { Form, HasError, AlertError } from 'vform'
 import moment from 'moment'
 
+import Gate from './Gate'
+Vue.prototype.$gate = new Gate(window.user);
+
 window.Form = Form;
 
 Vue.component(HasError.name, HasError);
